@@ -1,0 +1,78 @@
+[
+  {
+    "id": "DOC-9842-8721",
+    "tracking_code": "DS-2026-9842",
+    "title": "Hợp đồng Nguyên tắc Cung ứng Dịch vụ Công nghệ 2026",
+    "original_filename": "hop_dong_nguyen_tac_2026.pdf",
+    "file_size": 248512,
+    "file_extension": "pdf",
+    "mime_type": "application/pdf",
+    "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ipfs_cid": "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
+    "ipfs_status": "PINNED",
+    "owner_id": "usr-0000-0003",
+    "owner_email": "user@docseal.vn",
+    "owner_name": "Nguyễn Văn Người Dùng",
+    "status": "VERIFIED",
+    "status_description": "Đã được kiểm tra tính toàn vẹn và xác nhận bởi người phụ trách.",
+    "is_encrypted": true,
+    "verifier_id": "usr-0000-0002",
+    "verifier_name": "Trần Văn Xác Minh (Công chứng viên)",
+    "verifier_notes": "Đã đối chiếu tính toàn vẹn chữ ký số cá nhân và SHA-256 bản gốc. Dữ liệu khớp 100%.",
+    "created_at": "2026-09-20T10:15:30Z",
+    "updated_at": "2026-09-21T08:30:00Z",
+    "verified_at": "2026-09-21T08:30:00Z",
+    "history": [
+      {
+        "timestamp": "2026-09-20T10:15:30Z",
+        "action": "UPLOAD_RECORDED",
+        "actor": "user@docseal.vn",
+        "notes": "Tiếp nhận hồ sơ ban đầu và băm SHA-256."
+      },
+      {
+        "timestamp": "2026-09-20T10:16:02Z",
+        "action": "IPFS_PINNED",
+        "actor": "DocSeal Kubo Service",
+        "notes": "Lưu trữ nội dung mã hóa lên IPFS với CID QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG."
+      },
+      {
+        "timestamp": "2026-09-21T08:30:00Z",
+        "action": "VERIFIED_APPROVED",
+        "actor": "verifier@docseal.vn",
+        "notes": "Xác nhận hồ sơ đạt tính toàn vẹn."
+      }
+    ]
+  },
+  {
+    "id": "DOC-7123-5541",
+    "tracking_code": "DS-2026-7123",
+    "title": "Bằng tốt nghiệp Kỹ sư CNTT & Chứng chỉ Chuyên ngành",
+    "original_filename": "bang_tot_nghiep_cntt.pdf",
+    "file_size": 412890,
+    "file_extension": "pdf",
+    "mime_type": "application/pdf",
+    "sha256_hash": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+    "ipfs_cid": "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+    "ipfs_status": "PINNED",
+    "owner_id": "usr-0000-0003",
+    "owner_email": "user@docseal.vn",
+    "owner_name": "Nguyễn Văn Người Dùng",
+    "status": "PENDING",
+    "status_description": "Đang chờ người xác nhận rà soát hồ sơ.",
+    "is_encrypted": true,
+    "verifier_id": null,
+    "verifier_name": null,
+    "verifier_notes": null,
+    "created_at": "2026-10-10T14:40:12Z",
+    "updated_at": "2026-10-10T14:40:12Z",
+    "verified_at": null,
+    "history": [
+      {
+        "timestamp": "2026-10-10T14:40:12Z",
+        "action": "UPLOAD_RECORDED",
+        "actor": "user@docseal.vn",
+        "notes": "Tiếp nhận hồ sơ mới, gửi yêu cầu xác nhận."
+      }
+    ]
+  }
+]

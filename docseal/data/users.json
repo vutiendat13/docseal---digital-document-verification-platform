@@ -1,0 +1,32 @@
+[
+  {
+    "id": "usr-0000-0001",
+    "email": "admin@docseal.vn",
+    "full_name": "Quản Trị Viên Hệ Thống",
+    "role": "ADMIN",
+    "password_hash": "$2b$12$K8yR2sCq05Zt3iY2mK5uVeeG6lq4G37oP37zM4.mQkM8VlY2kG8Oa",
+    "is_active": true,
+    "created_at": "2026-01-15T08:00:00Z",
+    "last_login": "2026-10-13T10:30:00Z"
+  },
+  {
+    "id": "usr-0000-0002",
+    "email": "verifier@docseal.vn",
+    "full_name": "Trần Văn Xác Minh (Công chứng viên)",
+    "role": "VERIFIER",
+    "password_hash": "$2b$12$K8yR2sCq05Zt3iY2mK5uVeeG6lq4G37oP37zM4.mQkM8VlY2kG8Oa",
+    "is_active": true,
+    "created_at": "2026-02-01T09:15:00Z",
+    "last_login": "2026-10-12T14:20:00Z"
+  },
+  {
+    "id": "usr-0000-0003",
+    "email": "user@docseal.vn",
+    "full_name": "Nguyễn Văn Người Dùng",
+    "role": "USER",
+    "password_hash": "$2b$12$K8yR2sCq05Zt3iY2mK5uVeeG6lq4G37oP37zM4.mQkM8VlY2kG8Oa",
+    "is_active": true,
+    "created_at": "2026-03-10T11:00:00Z",
+    "last_login": "2026-10-13T09:00:00Z"
+  }
+]

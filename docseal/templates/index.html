@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocSeal — Digital Document Verification Platform</title>
+  <meta name="description" content="Nền tảng tiếp nhận, quản lý hồ sơ, kiểm tra tính toàn vẹn và xác minh tài liệu số phi tập trung qua IPFS và SHA-256.">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Three.js CDN with graceful fallback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" style="position:fixed;top:1.5rem;right:1.5rem;z-index:999;display:flex;flex-direction:column;gap:0.5rem;"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="#" class="brand" onclick="switchTab('tab-home')">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <span>DocSeal</span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a class="nav-link active" data-tab="tab-home" onclick="switchTab('tab-home')">Trang chủ</a></li>
+      <li><a class="nav-link" data-tab="tab-verify" onclick="switchTab('tab-verify')">Tra cứu & Xác minh</a></li>
+      <li><a class="nav-link" data-tab="tab-upload" onclick="switchTab('tab-upload')">Tiếp nhận tài liệu</a></li>
+      <li><a class="nav-link" data-tab="tab-dashboard" style="display:none;" onclick="switchTab('tab-dashboard')">Hồ sơ của tôi</a></li>
+      <li><a class="nav-link" data-tab="tab-verifier" style="display:none;" onclick="switchTab('tab-verifier')">Thẩm định viên</a></li>
+      <li><a class="nav-link" data-tab="tab-admin" style="display:none;" onclick="switchTab('tab-admin')">Quản trị viên</a></li>
+    </ul>
+
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <button id="theme-toggle-btn" class="btn btn-outline btn-sm" onclick="toggleTheme()">🌙 Tối</button>
+      <div class="nav-actions" id="auth-nav-actions">
+        <!-- Injected by app.js -->
+      </div>
+    </div>
+  </nav>
+
+  <!-- TAB: HOME -->
+  <main id="tab-home" class="tab-content">
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            Xác minh tài liệu số minh bạch & đáng tin cậy
+          </div>
+          <h1 class="hero-title">Bảo vệ tính toàn vẹn hồ sơ với <span>IPFS & SHA-256</span></h1>
+          <p class="hero-desc">
+            DocSeal cung cấp quy trình tiếp nhận, mã hóa cục bộ, lưu trữ phi tập trung trên IPFS và đối chiếu dấu vân tay mật mã SHA-256, giúp phát hiện ngay lập tức bất kỳ sự thay đổi trái phép nào.
+          </p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary" onclick="switchTab('tab-verify')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              Tra cứu & Xác minh
+            </button>
+            <button class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,0.3);" onclick="switchTab('tab-upload')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+              Tải hồ sơ lên
+            </button>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper">
+          <div id="three-canvas-container" style="width:100%;height:100%;"></div>
+          <div class="three-hint">Mô hình 3D: Nút mạng IPFS & Hồ sơ bảo vệ</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <!-- Quick Demo Account Bar -->
+      <div class="card" style="background:#f8fafc;border:1px dashed #cbd5e1;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;">
+        <div>
+          <h4 style="font-size:0.95rem;font-weight:600;color:var(--primary);">Tài Khoản Thử Nghiệm Nhanh (Click để đăng nhập):</h4>
+          <p style="font-size:0.825rem;color:var(--text-muted);">Sử dụng để kiểm tra phân quyền RBAC và luồng nghiệp vụ thực tế.</p>
+        </div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="quickLogin('admin@docseal.vn', 'AdminPassword@2026')">Quản trị viên (ADMIN)</button>
+          <button class="btn btn-outline btn-sm" onclick="quickLogin('verifier@docseal.vn', 'VerifierPassword@2026')">Thẩm định viên (VERIFIER)</button>
+          <button class="btn btn-outline btn-sm" onclick="quickLogin('user@docseal.vn', 'UserPassword@2026')">Người dùng (USER)</button>
+        </div>
+      </div>
+
+      <!-- Legal Honesty Banner -->
+      <div class="legal-banner">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+        <div>
+          <strong>NGUYÊN TẮC TRUNG THỰC VỀ CÔNG CHỨNG VÀ PHÁP LÝ:</strong>
+          <p>
+            DocSeal là nền tảng kỹ thuật hỗ trợ kiểm tra tính toàn vẹn dữ liệu số (SHA-256) và theo dõi hồ sơ lưu trữ phi tập trung IPFS. 
+            Hệ thống <strong>không tự động tuyên bố</strong> tài liệu có giá trị công chứng pháp lý nếu chưa qua quy trình chữ ký số với chứng thư số chuyên dùng của tổ chức công chứng được Nhà nước cấp phép.
+          </p>
+        </div>
+      </div>
+
+      <!-- Feature Grid -->
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Dấu Vân Tay SHA-256</h3>
+          <p>Mỗi tài liệu được tính toán giá trị băm cryptographic SHA-256 độc nhất ngay tại thời điểm tiếp nhận để đảm bảo tính bất biến.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+          </div>
+          <h3>Lưu Trữ IPFS Phi Tập Trung</h3>
+          <p>Tài liệu được mã hóa bảo mật phía máy chủ trước khi đưa lên mạng IPFS Kubo qua Content Identifier (CID) không thể giả mạo.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/></svg>
+          </div>
+          <h3>Mã Tra Cứu & QR Code</h3>
+          <p>Mỗi hồ sơ được tạo mã định danh duy nhất và QR Code tra cứu tiện lợi bằng điện thoại thông minh mọi lúc, mọi nơi.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- TAB: VERIFY -->
+  <main id="tab-verify" class="tab-content" style="display:none;">
+    <div class="container">
+      <div class="card">
+        <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:0.5rem;">Tra Cứu & Xác Minh Tính Toàn Vẹn Tài Liệu</h2>
+        <p style="color:var(--text-muted);margin-bottom:1.5rem;">
+          Nhập mã hồ sơ hoặc kéo thả tệp tin để hệ thống băm lại dấu vân tay SHA-256 và so khớp với hồ sơ lưu trữ chính thức.
+        </p>
+
+        <form onsubmit="handleVerifySubmit(event)">
+          <div class="form-group">
+            <label class="form-label" for="verify-doc-id">Mã Hồ Sơ (Document ID) hoặc Mã Tra Cứu:</label>
+            <input type="text" id="verify-doc-id" class="form-control" placeholder="Ví dụ: DOC-9842-8721 hoặc DS-2026-9842">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tệp Tin Cần Đối Chiếu (Không bắt buộc nếu chỉ tra cứu thông tin):</label>
+            <input type="file" id="verify-file-input" class="form-control">
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            Tiến Hành Xác Minh
+          </button>
+        </form>
+      </div>
+
+      <div id="verify-result-card" style="display:none;margin-top:1.5rem;"></div>
+    </div>
+  </main>
+
+  <!-- TAB: UPLOAD -->
+  <main id="tab-upload" class="tab-content" style="display:none;">
+    <div class="container" style="max-width:760px;">
+      <div class="card">
+        <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:0.5rem;">Tiếp Nhận Tài Liệu Số Mới</h2>
+        <p style="color:var(--text-muted);margin-bottom:1.5rem;">
+          Tài liệu sẽ được băm SHA-256, mã hóa an toàn và đưa vào quy trình thẩm định.
+        </p>
+
+        <form onsubmit="handleFileUploadSubmit(event)">
+          <div class="form-group">
+            <label class="form-label" for="upload-title">Tiêu Đề / Tên Trích Yếu Tài Liệu:</label>
+            <input type="text" id="upload-title" class="form-control" placeholder="Ví dụ: Hợp đồng nguyên tắc cung ứng dịch vụ..." required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Chọn Hoặc Kéo Thả Tệp Tin:</label>
+            <div id="upload-dropzone" class="dropzone">
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+              <p style="font-weight:600;margin-bottom:0.25rem;">Nhấn để chọn tệp hoặc kéo thả tệp vào đây</p>
+              <p style="font-size:0.8rem;color:var(--text-muted);">Hỗ trợ: PDF, DOCX, TXT, PNG, JPG (Tối đa 25MB)</p>
+            </div>
+            <input type="file" id="upload-file-input" style="display:none;">
+            <div id="upload-file-preview"></div>
+          </div>
+
+          <!-- Upload Progress -->
+          <div id="upload-progress" style="display:none;margin:1rem 0;">
+            <div style="background:#e2e8f0;border-radius:999px;height:8px;overflow:hidden;">
+              <div id="upload-progress-bar" style="background:var(--primary);width:0%;height:100%;transition:width 0.3s;"></div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;">
+            Tải Lên & Khởi Tạo Hồ Sơ
+          </button>
+        </form>
+
+        <div id="upload-receipt"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- TAB: DASHBOARD -->
+  <main id="tab-dashboard" class="tab-content" style="display:none;">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div>
+          <h2 style="font-size:1.5rem;font-weight:700;">Hồ Sơ Của Tôi</h2>
+          <p style="color:var(--text-muted);">Quản lý các tài liệu đã gửi tiếp nhận và theo dõi tiến độ xử lý.</p>
+        </div>
+        <button class="btn btn-primary" onclick="switchTab('tab-upload')">Tải Hồ Sơ Mới</button>
+      </div>
+
+      <div class="card table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã Hồ Sơ</th>
+              <th>Tiêu Đề</th>
+              <th>Dấu Vân Tay SHA-256</th>
+              <th>Trạng Thái</th>
+              <th>IPFS</th>
+              <th>Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="user-docs-table-body">
+            <!-- Injected by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- TAB: VERIFIER -->
+  <main id="tab-verifier" class="tab-content" style="display:none;">
+    <div class="container">
+      <div style="margin-bottom:1.5rem;">
+        <h2 style="font-size:1.5rem;font-weight:700;">Cổng Thẩm Định & Phê Duyệt Hồ Sơ</h2>
+        <p style="color:var(--text-muted);">Dành cho Thẩm định viên kiểm tra tính toàn vẹn và ghi nhận phê duyệt nghiệp vụ.</p>
+      </div>
+
+      <div class="card table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã Hồ Sơ</th>
+              <th>Thông Tin Tài Liệu & Người Gửi</th>
+              <th>SHA-256</th>
+              <th>Trạng Thái</th>
+              <th>Ngày Tạo</th>
+              <th>Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="verifier-table-body">
+            <!-- Injected by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- TAB: ADMIN -->
+  <main id="tab-admin" class="tab-content" style="display:none;">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div>
+          <h2 style="font-size:1.5rem;font-weight:700;">Quản Trị Hệ Thống (Zero-SQL Engine)</h2>
+          <p style="color:var(--text-muted);">Báo cáo thống kê thời gian thực từ kho dữ liệu JSON và nhật ký thao tác.</p>
+        </div>
+        <button class="btn btn-outline" onclick="triggerDatabaseBackup()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          Sao Lưu JSON Ngay
+        </button>
+      </div>
+
+      <!-- Stats Grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem;">
+        <div class="card" style="margin:0;">
+          <p style="color:var(--text-muted);font-size:0.875rem;">Tổng Người Dùng</p>
+          <h3 id="stat-users" style="font-size:2rem;color:var(--primary);">0</h3>
+        </div>
+        <div class="card" style="margin:0;">
+          <p style="color:var(--text-muted);font-size:0.875rem;">Tổng Hồ Sơ</p>
+          <h3 id="stat-docs" style="font-size:2rem;color:var(--primary);">0</h3>
+        </div>
+        <div class="card" style="margin:0;">
+          <p style="color:var(--text-muted);font-size:0.875rem;">Hồ Sơ Đã Xác Minh</p>
+          <h3 id="stat-verified" style="font-size:2rem;color:var(--success);">0</h3>
+        </div>
+        <div class="card" style="margin:0;">
+          <p style="color:var(--text-muted);font-size:0.875rem;">Trạng Thái IPFS Kubo</p>
+          <h3 id="stat-ipfs" style="font-size:1.25rem;color:var(--primary);">ONLINE</h3>
+        </div>
+      </div>
+
+      <!-- Users & Audit Logs -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <h3 style="font-size:1.15rem;margin-bottom:1rem;">Danh Sách Tài Khoản Người Dùng</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Họ Tên & Email</th>
+                <th>Vai Trò (Role)</th>
+                <th>Trạng Thái</th>
+                <th>Ngày Tạo</th>
+                <th>Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:1.15rem;margin-bottom:1rem;">Nhật Ký Thao Tác Hệ Thống (Audit Logs)</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Thời Gian</th>
+                <th>Hành Động</th>
+                <th>Người Thực Hiện</th>
+                <th>Chi Tiết</th>
+                <th>Kết Quả</th>
+              </tr>
+            </thead>
+            <tbody id="admin-logs-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- AUTH MODAL -->
+  <div id="auth-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+      <h3 id="auth-modal-title" style="margin-bottom:1.25rem;">Đăng Nhập Tài Khoản</h3>
+
+      <!-- Login Form -->
+      <form id="login-form" onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Email:</label>
+          <input type="email" id="login-email" class="form-control" required placeholder="admin@docseal.vn">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mật Khẩu:</label>
+          <input type="password" id="login-password" class="form-control" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5rem;">Đăng Nhập</button>
+        <p style="text-align:center;font-size:0.875rem;margin-top:1rem;color:var(--text-muted);">
+          Chưa có tài khoản? <a href="#" onclick="openAuthModal('register')" style="color:var(--primary);">Đăng ký ngay</a>
+        </p>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" style="display:none;" onsubmit="handleRegisterSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Họ và Tên:</label>
+          <input type="text" id="reg-name" class="form-control" required placeholder="Nguyễn Văn A">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email:</label>
+          <input type="email" id="reg-email" class="form-control" required placeholder="example@docseal.vn">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mật Khẩu:</label>
+          <input type="password" id="reg-password" class="form-control" required placeholder="Tối thiểu 8 ký tự">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5rem;">Tạo Tài Khoản</button>
+        <p style="text-align:center;font-size:0.875rem;margin-top:1rem;color:var(--text-muted);">
+          Đã có tài khoản? <a href="#" onclick="openAuthModal('login')" style="color:var(--primary);">Đăng nhập</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script src="/static/js/three_scene.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

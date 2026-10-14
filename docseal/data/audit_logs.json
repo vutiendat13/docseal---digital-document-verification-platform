@@ -1,0 +1,32 @@
+[
+  {
+    "id": "log-0001",
+    "timestamp": "2026-09-20T10:15:30Z",
+    "user_email": "user@docseal.vn",
+    "action": "DOCUMENT_UPLOAD",
+    "document_id": "DOC-9842-8721",
+    "ip_address": "127.0.0.1",
+    "status": "SUCCESS",
+    "details": "Tải lên tài liệu hop_dong_nguyen_tac_2026.pdf (248512 bytes)"
+  },
+  {
+    "id": "log-0002",
+    "timestamp": "2026-09-21T08:30:00Z",
+    "user_email": "verifier@docseal.vn",
+    "action": "DOCUMENT_APPROVE",
+    "document_id": "DOC-9842-8721",
+    "ip_address": "127.0.0.1",
+    "status": "SUCCESS",
+    "details": "Phê duyệt hồ sơ DOC-9842-8721 sau khi kiểm tra SHA-256."
+  },
+  {
+    "id": "log-0003",
+    "timestamp": "2026-10-10T14:40:12Z",
+    "user_email": "user@docseal.vn",
+    "action": "DOCUMENT_UPLOAD",
+    "document_id": "DOC-7123-5541",
+    "ip_address": "127.0.0.1",
+    "status": "SUCCESS",
+    "details": "Tải lên bằng tốt nghiệp bang_tot_nghiep_cntt.pdf"
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "name": "DocSeal — Digital Document Verification Platform",
+  "description": "Nền tảng tiếp nhận, quản lý hồ sơ, kiểm tra tính toàn vẹn và xác minh tài liệu số phi tập trung qua IPFS và SHA-256.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
